@@ -11,18 +11,18 @@
       <ol>
         <li v-for="post in posts.slice().reverse()">
           <h2>{{ post.title }} #{{ post.id }}</h2>
-          <small>User @ {{ post.user_id }} <br> Created / {{ post.date_created }}
-            <br>Updated / {{ post.date_updated }}</small><br><br>
+            <small>User @ {{ post.user_id }} 
+              <br> Created / {{ post.date_created }}
+              <br>Updated / {{ post.date_updated }}
+            </small>
             <p>{{ post.text }}</p>
           <a href="javascripts:;">Update</a>
           <a href="javascript:;">Delete</a>
         </li>
       </ol>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.1/vue-router.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vuex/3.0.1/vuex.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.14/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
   </body>
 </html>
 <script>
