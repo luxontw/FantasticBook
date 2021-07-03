@@ -1,5 +1,5 @@
 # FantasticBook
-Api 測試完成，但前端部分只串接了 `GET /api/all_post.php`
+Api 測試完成，前端部分只串接了 `GET /api/all_post.php`
 ## 取得所有文章
 ### Request Example
 `GET /api/all_post.php`
