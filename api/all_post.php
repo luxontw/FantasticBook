@@ -1,4 +1,5 @@
 <?php
+
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8"); 
 
@@ -9,8 +10,10 @@ include_once '../post.php';
 $database = new Database();
 $db = $database->getConnection();
 $items = new Post($db);
+
 // Get all post
 $stmt = $items->allPost();
+
 // Number of post
 $itemCount = $stmt->rowCount();
 
@@ -29,7 +32,7 @@ if ($itemCount > 0) {
         array_push($postArr, $e);
     }
     echo json_encode($postArr);
-} else {
+} else {  
     http_response_code(404);
     echo json_encode(
         array("message" => "No post found.")

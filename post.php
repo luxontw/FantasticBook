@@ -4,8 +4,10 @@ class Post
 {
     // Connection
     private $conn;
+
     // Table
     private $db_table = "post";
+    
     // Columns
     public $id;
     public $user_id;
@@ -53,18 +55,23 @@ class Post
                         id = ?
                     LIMIT 0,1";
         $stmt = $this->conn->prepare($sqlQuery);
+
         // Bind data
         $stmt->bindParam(1, $this->id);
+
         // Get Data
         $stmt->execute();
+
         // Check if any data be selected
         $rowCount = $this->conn->prepare("SELECT FOUND_ROWS()"); 
         $rowCount->execute();
         if (!$rowCount->fetchColumn()) {
             return false;
         }
+
         // Data to Row
         $dataRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
         // Save to class variables   
         $this->user_id = $dataRow['user_id'];
         $this->title = $dataRow['title'];
@@ -86,12 +93,14 @@ class Post
                         date_created = :date_created,
                         date_updated = :date_updated";
         $stmt = $this->conn->prepare($sqlQuery);
+
         // Sanitize
         $this->user_id = htmlspecialchars(strip_tags($this->user_id));
         $this->title = htmlspecialchars(strip_tags($this->title));
         $this->text = htmlspecialchars(strip_tags($this->text));
         $this->date_created = htmlspecialchars(strip_tags($this->date_created));
         $this->date_updated = htmlspecialchars(strip_tags($this->date_updated));
+        
         // Bind data
         $stmt->bindParam(":user_id", $this->user_id);
         $stmt->bindParam(":title", $this->title);
@@ -120,18 +129,21 @@ class Post
                     WHERE 
                         id = :id And user_id = :user_id"; // Check user and owner
         $stmt = $this->conn->prepare($sqlQuery);
+
         // Sanitize
         $this->id = htmlspecialchars(strip_tags($this->id));
         $this->user_id = htmlspecialchars(strip_tags($this->user_id));
         $this->title = htmlspecialchars(strip_tags($this->title));
         $this->text = htmlspecialchars(strip_tags($this->text));
         $this->date_updated = htmlspecialchars(strip_tags($this->date_updated));
+
         // Bind data
         $stmt->bindParam(":id", $this->id);
         $stmt->bindParam(":user_id", $this->user_id);
         $stmt->bindParam(":title", $this->title);
         $stmt->bindParam(":text", $this->text);
         $stmt->bindParam(":date_updated", $this->date_updated);
+
         if ($stmt->execute() && $stmt->rowCount()) { // rowCount(): Check if any data be edited
             return true;
         }
@@ -146,12 +158,15 @@ class Post
                     WHERE 
                         id = :id And user_id = :user_id"; // Check user and owner 
         $stmt = $this->conn->prepare($sqlQuery);
+
         // Sanitize
         $this->id = htmlspecialchars(strip_tags($this->id));
         $this->user_id = htmlspecialchars(strip_tags($this->user_id));
+
         // Bind data
         $stmt->bindParam(":id", $this->id);
         $stmt->bindParam(":user_id", $this->user_id);
+        
         if ($stmt->execute() && $stmt->rowCount()) { // rowCount(): Check if any data be edited
             return true;
         }

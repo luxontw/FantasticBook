@@ -1,4 +1,5 @@
 <?php
+
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
@@ -11,12 +12,12 @@ include_once '../post.php';
 // Connect to database
 $database = new Database();
 $db = $database->getConnection();
+
 // Get select post
 $item = new Post($db);
 $item->id = isset($_GET['id']) ? $_GET['id'] : die();
 
 if ($item->singlePost()) {
-    // create array
     $postArr = array(
         "id" =>  $item->id,
         "user_id" => $item->user_id,

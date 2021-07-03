@@ -1,4 +1,5 @@
 <?php
+
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
@@ -12,6 +13,7 @@ include_once '../post.php';
 $database = new Database();
 $db = $database->getConnection();
 $item = new Post($db);
+
 // User input
 $data = json_decode(file_get_contents("php://input"));
 $item->id = $data->id;
