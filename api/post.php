@@ -9,26 +9,22 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once '../config/database.php';
 include_once '../post.php';
 
-// Connect to database
 $database = new Database();
 $db = $database->getConnection();
 
-// Get select post
 $item = new Post($db);
-$item->id = isset($_GET['id']) ? $_GET['id'] : die();
+$id = isset($_GET["id"]) ? $_GET["id"] : die();
 
-if ($item->singlePost()) {
-    $postArr = array(
-        "id" =>  $item->id,
-        "user_id" => $item->user_id,
-        "title" => $item->title,
-        "text" => $item->text,
-        "date_created" => $item->date_created,
-        "date_updated" => $item->date_updated
-    );  
+if ($item->single($id)) {
+    foreach (Post::COLUMNS as $column) {
+        $postArr[$column] = $item->$column;
+    }
+
     http_response_code(200);
     echo json_encode($postArr);
 } else {
     http_response_code(404);
-    echo json_encode("Post not found.");
+    echo json_encode(
+        array("message" => "Post not found.")
+    );
 }

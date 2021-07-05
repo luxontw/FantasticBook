@@ -19,7 +19,9 @@ class Database
             );
             $this->conn->exec("set names utf8");
         } catch (PDOException $exception) {
-            echo "Database could not be connected: " . $exception->getMessage();
+            echo json_encode(
+                array("Database could not be connected" => $exception->getMessage())
+            );
         }
         return $this->conn;
     }

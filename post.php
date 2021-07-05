@@ -2,13 +2,12 @@
 
 class Post
 {
-    // Connection
     private $conn;
+    const DB_TABLE = "post";
+    const COLUMNS = ["id", "user_id", "title", "text", "date_created", "date_updated"];
+    const TEXT_LIMIT = 140;
+    const POST_LIMIT = 100;
 
-    // Table
-    private $db_table = "post";
-    
-    // Columns
     public $id;
     public $user_id;
     public $title;
@@ -16,133 +15,106 @@ class Post
     public $date_created;
     public $date_updated;
 
-    // DB connection
     public function __construct($db)
     {
         $this->conn = $db;
     }
 
-    // Read all post
-    public function allPost(): mixed
+    public function all(): mixed
     {
-        $sqlQuery = "SELECT 
+        $sqlQuery = "SELECT
                         id,
                         user_id,
                         title,
                         text,
                         date_created,
                         date_updated
-                    FROM 
-                        " . $this->db_table . "";
+                    FROM
+                        " . self::DB_TABLE . "
+                    ORDER BY
+                        date_created DESC
+                    LIMIT " . self::POST_LIMIT . "";
         $stmt = $this->conn->prepare($sqlQuery);
         $stmt->execute();
         return $stmt;
     }
 
-    // Read single post
-    public function singlePost(): bool
+    public function single($id): bool
     {
         $sqlQuery = "SELECT
-                        id, 
-                        user_id, 
-                        title, 
-                        text, 
-                        date_created, 
+                        id,
+                        user_id,
+                        title,
+                        text,
+                        date_created,
                         date_updated
                     FROM
-                        ". $this->db_table ."
-                    WHERE 
+                        " . self::DB_TABLE . "
+                    WHERE
                         id = ?
                     LIMIT 0,1";
         $stmt = $this->conn->prepare($sqlQuery);
-
-        // Bind data
-        $stmt->bindParam(1, $this->id);
-
-        // Get Data
+        $stmt->bindParam(1, $id);
         $stmt->execute();
 
-        // Check if any data be selected
         $rowCount = $this->conn->prepare("SELECT FOUND_ROWS()"); 
         $rowCount->execute();
         if (!$rowCount->fetchColumn()) {
             return false;
         }
 
-        // Data to Row
         $dataRow = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Save to class variables   
-        $this->user_id = $dataRow['user_id'];
-        $this->title = $dataRow['title'];
-        $this->text = $dataRow['text'];
-        $this->date_created = $dataRow['date_created'];
-        $this->date_updated = $dataRow['date_updated'];
+        foreach (self::COLUMNS as $column) {
+            $this->$column = $dataRow[$column];
+        }
         return true;
     }
 
-    // Create post
-    public function addPost(): bool
+    public function add(): int
     {
         $sqlQuery = "INSERT INTO
-                        ". $this->db_table ."
+                        " . self::DB_TABLE . "
                     SET
-                        user_id = :user_id, 
-                        title = :title, 
-                        text = :text, 
+                        user_id = :user_id,
+                        title = :title,
+                        text = :text,
                         date_created = :date_created,
                         date_updated = :date_updated";
         $stmt = $this->conn->prepare($sqlQuery);
-
-        // Sanitize
-        $this->user_id = htmlspecialchars(strip_tags($this->user_id));
-        $this->title = htmlspecialchars(strip_tags($this->title));
-        $this->text = htmlspecialchars(strip_tags($this->text));
-        $this->date_created = htmlspecialchars(strip_tags($this->date_created));
-        $this->date_updated = htmlspecialchars(strip_tags($this->date_updated));
         
-        // Bind data
-        $stmt->bindParam(":user_id", $this->user_id);
-        $stmt->bindParam(":title", $this->title);
-        $stmt->bindParam(":text", $this->text);
-        $stmt->bindParam(":date_created", $this->date_created);
-        $stmt->bindParam(":date_updated", $this->date_updated);
+        foreach (self::COLUMNS as $key => $column) {
+            if ($key) {
+                $stmt->bindParam(":" . $column . "", $this->$column);
+            }
+        }
         
         try {
-            $stmt->execute();
-            return true;
-        } catch (PDOException) {
-            echo json_encode("User could not be found.");
-            return false;
+            if ($stmt->execute()) {
+                return 1;
+            }
+            return 0;
+        } catch (PDOException) { // User not found
+            return 2;
         }
     }
 
-    // Update post
-    public function updatePost(): bool
+    public function update(): bool
     {
         $sqlQuery = "UPDATE
-                        ". $this->db_table ."
+                        " . self::DB_TABLE . "
                     SET
-                        title = :title, 
-                        text = :text, 
+                        title = :title,
+                        text = :text,
                         date_updated = :date_updated
-                    WHERE 
+                    WHERE
                         id = :id And user_id = :user_id"; // Check user and owner
         $stmt = $this->conn->prepare($sqlQuery);
-
-        // Sanitize
-        $this->id = htmlspecialchars(strip_tags($this->id));
-        $this->user_id = htmlspecialchars(strip_tags($this->user_id));
-        $this->title = htmlspecialchars(strip_tags($this->title));
-        $this->text = htmlspecialchars(strip_tags($this->text));
-        $this->date_updated = htmlspecialchars(strip_tags($this->date_updated));
-
-        // Bind data
-        $stmt->bindParam(":id", $this->id);
-        $stmt->bindParam(":user_id", $this->user_id);
-        $stmt->bindParam(":title", $this->title);
-        $stmt->bindParam(":text", $this->text);
-        $stmt->bindParam(":date_updated", $this->date_updated);
+        
+        foreach (self::COLUMNS as $key => $column) {
+            if ($key != 4) {
+                $stmt->bindParam(":" . $column . "", $this->$column);
+            }
+        }
 
         if ($stmt->execute() && $stmt->rowCount()) { // rowCount(): Check if any data be edited
             return true;
@@ -150,20 +122,14 @@ class Post
         return false;
     }
 
-    // Delete post
-    public function deletePost(): bool
+    public function delete(): bool
     {
-        $sqlQuery = "DELETE FROM 
-                        " . $this->db_table . "
-                    WHERE 
+        $sqlQuery = "DELETE FROM
+                        " . self::DB_TABLE . "
+                    WHERE
                         id = :id And user_id = :user_id"; // Check user and owner 
         $stmt = $this->conn->prepare($sqlQuery);
 
-        // Sanitize
-        $this->id = htmlspecialchars(strip_tags($this->id));
-        $this->user_id = htmlspecialchars(strip_tags($this->user_id));
-
-        // Bind data
         $stmt->bindParam(":id", $this->id);
         $stmt->bindParam(":user_id", $this->user_id);
         

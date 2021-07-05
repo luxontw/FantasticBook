@@ -12,7 +12,7 @@
         <li v-for="post in posts.slice().reverse()">
           <h2>{{ post.title }} #{{ post.id }}</h2>
             <small>User @ {{ post.user_id }} 
-              <br> Created / {{ post.date_created }}
+              <br>Created / {{ post.date_created }}
               <br>Updated / {{ post.date_updated }}
             </small>
             <p>{{ post.text }}</p>
@@ -41,7 +41,7 @@
       ]
     },
     mounted() {
-      axios.get("http://localhost:8080/api/all_post.php").then((res) => {
+      axios.get("/api/all_post.php").then((res) => {
         this.posts = res.data;
       });
     }

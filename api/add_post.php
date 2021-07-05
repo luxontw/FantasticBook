@@ -9,16 +9,18 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once '../config/database.php';
 include_once '../post.php';
 
-// For test
-date_default_timezone_set("Asia/Taipei");
-
-// Connect to database
 $database = new Database();
 $db = $database->getConnection();
 $item = new Post($db);
 
 // User input
 $data = json_decode(file_get_contents("php://input"));
+if (mb_strlen($data->text) > Post::TEXT_LIMIT) {
+    echo json_encode(
+        array("message" => "The text is more than " . Post::TEXT_LIMIT . " words.")
+    );
+    die();
+}
 $item->user_id = $data->user_id;
 $item->title = $data->title;
 $item->text = $data->text;
@@ -27,8 +29,18 @@ $item->text = $data->text;
 $item->date_created = date('Y-m-d H:i:s');
 $item->date_updated = '0000-00-00 00:00:00';
 
-if ($item->addPost()) {
-    echo json_encode("Post created successfully.");
+$status = $item->add();
+
+if ($status == 1) {
+    echo json_encode(
+        array("message" => "Post created successfully.")
+    );
+} else if ($status == 0) {
+    echo json_encode(
+        array("message" => "Post could not be created.")
+    );
 } else {
-    echo json_encode("Post could not be created.");
+    echo json_encode(
+        array("message" => "User not found, post could not be created.")
+    );
 }

@@ -6,30 +6,23 @@ header("Content-Type: application/json; charset=UTF-8");
 include_once '../config/database.php';
 include_once '../post.php';
 
-// Connect to database
 $database = new Database();
 $db = $database->getConnection();
-$items = new Post($db);
+$item = new Post($db);
 
-// Get all post
-$stmt = $items->allPost();
-
-// Number of post
+$stmt = $item->all();
 $itemCount = $stmt->rowCount();
 
-if ($itemCount > 0) {   
-    $postArr = array();
+if ($itemCount > 0) {
+    $postArr = [];
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
-        $e = array(
-            "id" => $id,
-            "user_id" => $user_id,
-            "title" => $title,
-            "text" => $text,
-            "date_created" => $date_created,
-            "date_updated" => $date_updated
-        );
-        array_push($postArr, $e);
+        
+        foreach (Post::COLUMNS as $column) {
+            $post[$column] = $item->$column;
+        }
+
+        array_push($postArr, $post);
     }
     echo json_encode($postArr);
 } else {  
