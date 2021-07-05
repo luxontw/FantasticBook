@@ -19,7 +19,6 @@ if ($item->single($id)) {
     foreach (Post::COLUMNS as $column) {
         $postArr[$column] = $item->$column;
     }
-
     http_response_code(200);
     echo json_encode($postArr);
 } else {
