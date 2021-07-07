@@ -21,3 +21,19 @@
     "date_updated": "0000-00-00 00:00:00"	
   }	
 ]
+```
+```javascript	
+{	
+  "id": "55",	
+  "user_id": "2",	
+  "title": "Quick Brown Fox",	
+  "text": "The quick brown fox jumps over the lazy dog.",	
+  "date_created": "2021-07-03 03:03:52",	
+  "date_updated": "0000-00-00 00:00:00"	
+}
+```
+```javascript	
+{	
+  "message": "No post found."
+}
+```
