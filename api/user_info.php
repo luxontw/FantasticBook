@@ -17,10 +17,11 @@ if (!isset($_SESSION["user_id"])) {
 }
 
 $item = new User();
-$username = isset($_GET["username"]) ? $_GET["username"] : die();
-$user = $item->info($username);
+$id = isset($_GET["id"]) ? $_GET["id"] : die();
+$id=(int)$id;
+$user = $item->info($id);
 
-if ($user->username != "") {
+if ($user->id != "") {
     foreach (User::COLUMNS as $column) {
         if($column != "password") {
             $userArr[$column] = $user->$column;

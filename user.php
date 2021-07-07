@@ -26,17 +26,22 @@ class User
         return false;
     }
 
-    public static function info($username): User
+    public static function info($user_info): User
     {
         $conn = Database::getConnection();
         $user = new User();
+        $user_id_set = is_integer($user_info) ? "id = ?" : "";
+        $username_set = is_string($user_info) ? "username = ?" : "";
+        
         $sqlQuery = "SELECT *
                     FROM
                         " . self::DB_TABLE . "
                     WHERE
-                        username = ?";
+                        " . $user_id_set . "
+                        " . $username_set . "";
+
         $stmt = $conn->prepare($sqlQuery);
-        $stmt->bindParam(1, $username);
+        $stmt->bindParam(1, $user_info);
         $stmt->execute();
 
         if ($dataRow = $stmt->fetch(PDO::FETCH_ASSOC)) {
