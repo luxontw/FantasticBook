@@ -1,6 +1,6 @@
 # FantasticBook
 ### Request Example	
-`GET /api/all_post.php`	
+`GET /api/all_post.php`
 ### Response Example	
 ```javascript    	
 [	
