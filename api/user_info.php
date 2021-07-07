@@ -6,7 +6,7 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-require_once("../post.php");
+require_once("../user.php");
 
 if (!isset($_SESSION["user_id"])) {
     http_response_code(401);
@@ -16,19 +16,21 @@ if (!isset($_SESSION["user_id"])) {
     die();
 }
 
-$item = new Post();
-$id = isset($_GET["id"]) ? $_GET["id"] : die();
-$post = $item->single($id);
+$item = new User();
+$username = isset($_GET["username"]) ? $_GET["username"] : die();
+$user = $item->info($username);
 
-if ($post->user_id != "") {
-    foreach (Post::COLUMNS as $column) {
-        $postArr[$column] = $post->$column;
+if ($user->username != "") {
+    foreach (User::COLUMNS as $column) {
+        if($column != "password") {
+            $userArr[$column] = $user->$column;
+        }
     }
     http_response_code(200);
-    echo json_encode($postArr);
+    echo json_encode($userArr);
 } else {
     http_response_code(404);
     echo json_encode(
-        array("message" => "Post not found.")
+        array("message" => "User not found.")
     );
 }

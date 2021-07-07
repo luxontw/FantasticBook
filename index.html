@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FantasticBook Ver1</title>
+    <title>FantasticBook Ver2</title>
   </head>
   <body>
     <div id="app">
@@ -29,6 +29,11 @@
   new Vue({
     el: "#app",
     data: {
+      messages: [ 
+        {
+          message: "",
+        }
+      ],
       posts: [
         {
           id: "",
@@ -43,6 +48,7 @@
     mounted() {
       axios.get("/api/all_post.php").then((res) => {
         this.posts = res.data;
+        
       });
     }
   });

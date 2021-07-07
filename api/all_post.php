@@ -1,16 +1,22 @@
 <?php
-
+Session_Start();
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8"); 
 
-include_once '../config/database.php';
-include_once '../post.php';
 
-$database = new Database();
-$db = $database->getConnection();
+require_once("../post.php");
 
-$item = new Post($db);
-$stmt = $item->all();
+if (!isset($_SESSION["user_id"])) {
+    http_response_code(401);
+    echo json_encode(
+        array("message" => "Permission denied.")
+    );
+    die();
+}
+
+$item = new Post();
+$user_id = isset($_GET["user_id"]) ? $_GET["user_id"] : null;
+$stmt = $item->all($user_id);
 $itemCount = $stmt->rowCount();
 
 if ($itemCount > 0) {

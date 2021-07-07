@@ -1,77 +1,69 @@
 <?php
 
+require_once("../config/database.php");
+
 class Post
 {
-    private $conn;
     const DB_TABLE = "post";
     const COLUMNS = ["id", "user_id", "title", "text", "date_created", "date_updated"];
     const TEXT_LIMIT = 140;
     const POST_LIMIT = 100;
 
-    public $id;
-    public $user_id;
-    public $title;
-    public $text;
-    public $date_created;
-    public $date_updated;
-
-    public function __construct($db)
+    public function __construct()
     {
-        $this->conn = $db;
+        $this->id = "";
+        $this->user_id = "";
+        $this->title = "";
+        $this->text = "";
+        $this->date_created = "";
+        $this->date_updated = "";
     }
 
-    public function all(): mixed
+    public static function all($user_id): mixed
     {
-        $sqlQuery = "SELECT
-                        id,
-                        user_id,
-                        title,
-                        text,
-                        date_created,
-                        date_updated
+        $conn = Database::getConnection();
+        $user_id_set = !empty($user_id) ? "WHERE user_id = ?" : "";
+        $sqlQuery = "SELECT *
                     FROM
                         " . self::DB_TABLE . "
+                        " . $user_id_set . " 
                     ORDER BY
                         date_created DESC
                     LIMIT " . self::POST_LIMIT . "";
-        $stmt = $this->conn->prepare($sqlQuery);
+
+        $stmt = $conn->prepare($sqlQuery);
+        if(!empty($user_id)) {
+            $stmt->bindParam(1, $user_id);
+        }
         $stmt->execute();
         return $stmt;
     }
 
-    public function single($id): bool
+    public static function single($id): Post
     {
-        $sqlQuery = "SELECT
-                        id,
-                        user_id,
-                        title,
-                        text,
-                        date_created,
-                        date_updated
+        $conn = Database::getConnection();
+        $post = new Post();
+        $sqlQuery = "SELECT *
                     FROM
                         " . self::DB_TABLE . "
                     WHERE
                         id = ?
                     LIMIT 0,1";
-        $stmt = $this->conn->prepare($sqlQuery);
+        $stmt = $conn->prepare($sqlQuery);
         $stmt->bindParam(1, $id);
         $stmt->execute();
 
-        $rowCount = $this->conn->prepare("SELECT FOUND_ROWS()"); 
-        $rowCount->execute();
-        if (!$rowCount->fetchColumn()) {
-            return false;
+        if ($dataRow = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            foreach (self::COLUMNS as $column) {
+                $post->$column = $dataRow[$column];
+            }
         }
-
-        $dataRow = $stmt->fetch(PDO::FETCH_ASSOC);
-        foreach (self::COLUMNS as $column) {
-            $this->$column = $dataRow[$column];
-        }
-        return true;
+        return $post;
     }
 
-    public function add(): int
+    public static function add($post): int
     {
+        $conn = Database::getConnection();
         $sqlQuery = "INSERT INTO
                         " . self::DB_TABLE . "
                     SET
@@ -80,11 +72,11 @@ class Post
                         text = :text,
                         date_created = :date_created,
                         date_updated = :date_updated";
-        $stmt = $this->conn->prepare($sqlQuery);
+        $stmt = $conn->prepare($sqlQuery);
         
-        foreach (self::COLUMNS as $key => $column) {
-            if ($key) {
-                $stmt->bindParam(":" . $column . "", $this->$column);
+        foreach (self::COLUMNS as $column) {
+            if ($post->$column != null) {
+                $stmt->bindParam(":" . $column . "", $post->$column);
             }
         }
         
@@ -98,21 +90,24 @@ class Post
         }
     }
 
-    public function update(): bool
+    public static function update($post): bool
     {
+        $conn = Database::getConnection();
+        $title_set = !empty($post->title) ? ",title = :title" : "";
+        $text_set = !empty($post->text) ? ",text = :text" : "";
         $sqlQuery = "UPDATE
                         " . self::DB_TABLE . "
                     SET
-                        title = :title,
-                        text = :text,
                         date_updated = :date_updated
+                        " . $title_set . "
+                        " . $text_set . "
                     WHERE
                         id = :id And user_id = :user_id"; // Check user and owner
-        $stmt = $this->conn->prepare($sqlQuery);
+        $stmt = $conn->prepare($sqlQuery);
         
-        foreach (self::COLUMNS as $key => $column) {
-            if ($key != 4) {
-                $stmt->bindParam(":" . $column . "", $this->$column);
+        foreach (self::COLUMNS as $column) {
+            if ($post->$column != null) {
+                $stmt->bindParam(":" . $column . "", $post->$column);
             }
         }
 
@@ -122,16 +117,17 @@ class Post
         return false;
     }
 
-    public function delete(): bool
+    public static function delete($id, $user_id): bool
     {
+        $conn = Database::getConnection();
         $sqlQuery = "DELETE FROM
                         " . self::DB_TABLE . "
                     WHERE
                         id = :id And user_id = :user_id"; // Check user and owner 
-        $stmt = $this->conn->prepare($sqlQuery);
+        $stmt = $conn->prepare($sqlQuery);
 
-        $stmt->bindParam(":id", $this->id);
-        $stmt->bindParam(":user_id", $this->user_id);
+        $stmt->bindParam(":id", $id);
+        $stmt->bindParam(":user_id", $user_id);
         
         if ($stmt->execute() && $stmt->rowCount()) { // rowCount(): Check if any data be edited
             return true;

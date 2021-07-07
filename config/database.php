@@ -2,27 +2,27 @@
 
 class Database 
 {
-    private $host = "127.0.0.1";
-    private $database_name = "ftbook";
-    private $username = "kkk";
-    private $password = "kkk";
-    public $conn;
+    private static $conn;
     
-    public function getConnection()
+    public static function getConnection()
     {
-        $this->conn = null;
+        $host = "127.0.0.1";
+        $db_name = "ftbook";
+        $username = "kkk";
+        $password = "kkk";
+        if (!empty(self::$conn)) {
+            return self::$conn;
+        }
         try {
-            $this->conn = new PDO(
-                "mysql:host=" . $this->host . ";dbname=" . $this->database_name,
-                $this->username,
-                $this->password
-            );
-            $this->conn->exec("set names utf8");
-        } catch (PDOException $exception) {
+            self::$conn = new PDO("mysql:host=$host;dbname=$db_name", $username, $password, array(
+                PDO::ATTR_PERSISTENT => true
+            ));
+            self::$conn->exec("set names utf8");
+        } catch (PDOException $e) {
             echo json_encode(
-                array("Database could not be connected" => $exception->getMessage())
+                array("Database could not be connected" => $e->getMessage())
             );
         }
-        return $this->conn;
+        return self::$conn;
     }
  }
