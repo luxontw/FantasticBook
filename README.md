@@ -1,12 +1,24 @@
 # FantasticBook
-#### 註冊功能，登入後才可查看 & 發布貼文   
+#### 註冊功能，登入後才可查看使用者資訊 & 發布貼文   
 `POST /api/register.php`  
 
-`POST /api/login.php`
-#### 顯示發文者的名字
+`POST /api/login.php` 
+
 `GET /api/user_info.php?id=`
+#### 貼文新增 / 刪除 / 查詢 / 修改功能
+`POST /api/add_post.php` 
+
+`POST /api/delete_post.php` 
+
+`POST /api/post.php?id=` 
+
+`POST /api/update_post.php`
 #### 動態時報：顯示某個人的所有貼文
 `GET /api/all_post.php?user_id=`
+#### 貼文留言功能
+`POST /api/add_comment.php` 
+
+`POST /api/all_comment.php?post_id=` 
 ### Request Example	
 `GET /api/all_post.php`
 ### Response Example	
