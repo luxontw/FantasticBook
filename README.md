@@ -20,6 +20,13 @@
 
 `GET /api/all_comment.php?post_id=` 
 ### Request Example	
+`Post /api/add_post.php`
+```javascript
+{	
+  "title": "Quick Brown Fox",	
+  "text": "The quick brown fox jumps over the lazy dog."
+}
+```
 `GET /api/all_post.php`
 ### Response Example	
 ```javascript    	
