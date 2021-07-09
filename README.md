@@ -10,7 +10,7 @@
 
 `POST /api/delete_post.php` 
 
-`POST /api/post.php?id=` 
+`GET /api/post.php?id=` 
 
 `POST /api/update_post.php`
 #### 動態時報：顯示某個人的所有貼文
@@ -18,7 +18,7 @@
 #### 貼文留言功能
 `POST /api/add_comment.php` 
 
-`POST /api/all_comment.php?post_id=` 
+`GET /api/all_comment.php?post_id=` 
 ### Request Example	
 `GET /api/all_post.php`
 ### Response Example	
