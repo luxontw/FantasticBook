@@ -4,7 +4,7 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8"); 
 
 
-require_once("../post.php");
+require_once("../comment.php");
 
 if (!isset($_SESSION["user_id"])) {
     http_response_code(401);
@@ -14,23 +14,23 @@ if (!isset($_SESSION["user_id"])) {
     die();
 }
 
-$user_id = isset($_GET["user_id"]) ? $_GET["user_id"] : null;
-$stmt = Post::all($user_id);
+$post_id = isset($_GET["post_id"]) ? $_GET["post_id"] : null;
+$stmt = Comment::all($post_id);
 $itemCount = $stmt->rowCount();
 
 if ($itemCount > 0) {
-    $postArr = [];
+    $commentArr = [];
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
-        foreach (Post::COLUMNS as $column) {
-            $post[$column] = $$column;
+        foreach (Comment::COLUMNS as $column) {
+            $comment[$column] = $$column;
         }
-        array_push($postArr, $post);
+        array_push($commentArr, $comment);
     }
-    echo json_encode($postArr);
+    echo json_encode($commentArr);
 } else {  
     http_response_code(404);
     echo json_encode(
-        array("message" => "No post found.")
+        array("message" => "No comment found.")
     );
 }

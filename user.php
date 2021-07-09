@@ -19,6 +19,7 @@ class User
 
     public static function login($username, $password): bool
     {
+        $user = "";
         $user = self::info($username);
         if ($user && password_verify($password, $user->password)) {
             return true;
@@ -54,7 +55,7 @@ class User
 
     public static function add($user): bool
     {
-        $item = $user->info($user->username);
+        $item = self::info($user->username);
         if (!empty($item->id)) {
             return false;
         }

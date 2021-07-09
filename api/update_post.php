@@ -1,5 +1,5 @@
 <?php
-Session_Start();
+session_start();
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
@@ -24,7 +24,7 @@ $item->text = $data->text;
 // Auto generate
 $item->date_updated = date('Y-m-d H:i:s');
 
-if ($item->update($item)) {
+if (Post::update($item)) {
     echo json_encode(
         array("message" => "Post updated successfully.")
     );

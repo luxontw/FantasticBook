@@ -1,5 +1,5 @@
 <?php
-Session_Start();
+session_start();
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
@@ -16,10 +16,9 @@ if (!isset($_SESSION["user_id"])) {
     die();
 }
 
-$item = new User();
 $id = isset($_GET["id"]) ? $_GET["id"] : die();
 $id=(int)$id;
-$user = $item->info($id);
+$user = User::info($id);
 
 if ($user->id != "") {
     foreach (User::COLUMNS as $column) {

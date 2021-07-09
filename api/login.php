@@ -8,15 +8,13 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 require_once("../user.php");
 
-$user = new User();
-
 // User input
 $data = json_decode(file_get_contents("php://input"));
 $data->username;
 $data->password;
 
-if ($user->login($data->username, $data->password)) {
-    $user = $user->info($data->username);
+if (User::login($data->username, $data->password)) {
+    $user = User::info($data->username);
     $_SESSION["user_id"] = $user->id;
 
     echo json_encode(

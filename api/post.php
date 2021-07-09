@@ -1,5 +1,5 @@
 <?php
-Session_Start();
+session_start();
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
@@ -16,9 +16,8 @@ if (!isset($_SESSION["user_id"])) {
     die();
 }
 
-$item = new Post();
 $id = isset($_GET["id"]) ? $_GET["id"] : die();
-$post = $item->single($id);
+$post = Post::single($id);
 
 if ($post->user_id != "") {
     foreach (Post::COLUMNS as $column) {

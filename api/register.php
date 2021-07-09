@@ -19,7 +19,7 @@ $user->password = $data->password;
 // Auto generate
 $user->date_created = date('Y-m-d H:i:s');
 $user->date_updated = '0000-00-00 00:00:00';
-if ($user->add($user)) {
+if (User::add($user)) {
     echo json_encode(array("message" => "User created successfully."));
 } else {
     http_response_code(400);
